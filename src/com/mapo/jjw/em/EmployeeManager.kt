@@ -12,7 +12,6 @@ import kotlin.collections.ArrayList
 const val TAX_RATE = 0.08F
 const val HOURLY_RATE = 25000
 
-@Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
 class EmployeeManager {
     private val emScanner = Scanner(System.`in`)
     private val emOperations = EMOperationsImpl()
@@ -215,7 +214,7 @@ class EmployeeManager {
                             }
                             !is PartTimeEmployee, is SalesEmployee -> {
                                 loop@ do {
-                                    println("연간 급여액을 원 단위로 입력하세요")
+                                    println("연간 급여 총액을 원 단위로 입력하세요")
                                     when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                         !is Int -> println("잘못된 입력입니다")
                                         -1 -> println("잘못된 입력입니다")
@@ -239,7 +238,7 @@ class EmployeeManager {
                             }
                             else -> {
                                 loop@ do {
-                                    println("연간 급여액을 원 단위로 입력하세요")
+                                    println("연간 급여 총액을 원 단위로 입력하세요")
                                     when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                         !is Int -> println("잘못된 입력입니다")
                                         -1 -> println("잘못된 입력입니다")
@@ -338,7 +337,7 @@ class EmployeeManager {
                 when(emType) {
                     1 -> {
                         loop@ do {
-                            println("연간 급여액을 입력하세요")
+                            println("연간 급여 총액을 원 단위로 입력하세요")
                             when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                 !is Int -> println("잘못된 입력입니다")
                                 -1 -> println("잘못된 입력입니다")
@@ -356,7 +355,7 @@ class EmployeeManager {
                     }
                     2 -> {
                         loop@ do {
-                            println("연간 급여액을 입력하세요")
+                            println("연간 급여 총액을 원 단위로 입력하세요")
                             when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                 !is Int -> println("잘못된 입력입니다")
                                 -1 -> println("잘못된 입력입니다")
@@ -367,7 +366,7 @@ class EmployeeManager {
                             }
                         } while (true)
                         loop@ do {
-                            println("연간 영업 인센티브 총액을 입력하세요")
+                            println("연간 영업 인센티브 총액을 원 단위로 입력하세요")
                             when(val emSalesPerformance : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                 !is Int -> println("잘못된 입력입니다")
                                 -1 -> println("잘못된 입력입니다")
@@ -385,7 +384,7 @@ class EmployeeManager {
                     }
                     3 -> {
                         loop@ do {
-                            println("일간 근무 시간을 입력하세요")
+                            println("일간 근무 시간을 시간 단위로 입력하세요")
                             when(val emWorkingHour : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
                                 !is Int -> println("잘못된 입력입니다")
                                 -1 -> println("잘못된 입력입니다")
