@@ -13,6 +13,6 @@ interface EMOperations {
     fun deleteEmployee(employeeId: UUID) : Boolean
     fun isValidEmployee(employeeId: UUID) : Int
     fun viewAllEmployee()
-    fun viewDeptEmployee(employeeDepartment: Department)
-    fun viewEmployeeById(id: UUID)
+    fun viewDeptEmployee(department: Department)
+    fun viewEmployeeById(employeeId: UUID)
 }

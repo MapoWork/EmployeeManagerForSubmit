@@ -79,30 +79,30 @@ class EMOperationsImpl : EMOperations {
         println("[월 급여 합산 금액] ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(salaryTotal)}")
         println("[월 급여 평균 금액] ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(salaryTotal.div(counter.get()))}")
     }
-    override fun viewDeptEmployee(employeeDepartment: Department) {
+    override fun viewDeptEmployee(department: Department) {
         var salaryTotal : Long = 0
-        println("[${employeeDepartment.deptName}] 소속 사원 조회 내용은 다음과 같습니다 :\n")
+        println("[${department.deptName}] 소속 사원 조회 내용은 다음과 같습니다 :\n")
         val counter = AtomicInteger()
         for (employee in employeeDataRepo.getAllEmployee()) {
             when(employee.getEmployeeDepartment().deptName) {
-                employeeDepartment.deptName -> {
+                department.deptName -> {
                     println("사원 ${counter.incrementAndGet()}\n${employee.toString()}")
                     salaryTotal += employee.calculateSalary()
                 }
                 else -> { }
             }
         }
-        println("\n[${employeeDepartment.deptName}] 소속 사원 수] ${counter.get()}명")
+        println("\n[${department.deptName}] 소속 사원 수] ${counter.get()}명")
         println("[월 급여 합산 금액] ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(salaryTotal)}")
         println("[월 급여 평균 금액] ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(salaryTotal.div(counter.get()))}")
     }
-    override fun viewEmployeeById(id: UUID) {
-        when(isValidEmployee(id)) {
+    override fun viewEmployeeById(employeeId: UUID) {
+        when(isValidEmployee(employeeId)) {
             in 0..2 -> {
-                val employee = getEmployeeById(id, isValidEmployee(id))
+                val employee = getEmployeeById(employeeId, isValidEmployee(employeeId))
                 println("해당 사원 번호 조회 내용은 다음과 같습니다 :\n${employee.toString()}")
             }
-            else -> println("사원 번호 $id 조회 실패\n존재하지 않는 사원 번호입니다")
+            else -> println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
         }
     }
 }

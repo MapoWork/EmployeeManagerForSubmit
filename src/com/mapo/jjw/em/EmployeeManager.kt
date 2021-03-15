@@ -4,6 +4,7 @@ import com.mapo.jjw.em.model.*
 import com.mapo.jjw.em.model.Department.*
 import com.mapo.jjw.em.operations.EMOperations
 import com.mapo.jjw.em.operations.EMOperationsImpl
+import javafx.scene.control.SeparatorMenuItem
 import java.lang.Exception
 import java.util.*
 import kotlin.system.exitProcess
@@ -75,14 +76,16 @@ class EmployeeManager {
                 Loop@do {
                     println("조회를 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
                     when (val employeeId = emScanner.nextLine()) {
-                        "취소" -> break
+                        "취소" -> break@Loop
                         else -> {
                             when ( try { emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
-                                true -> {
+                                in 0..2 -> {
                                     emOperations.viewEmployeeById(UUID.fromString(employeeId))
                                     break@Loop
                                 }
-                                false -> println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
+                                else -> {
+                                    println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
+                                }
                             }
                         }
                     }
@@ -103,18 +106,22 @@ class EmployeeManager {
                         "취소" -> break
                         else -> {
                             when ( try { modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
-                                true -> {
-                                    val parentEmployee: Employee = emOperations.getEmployeeById(UUID.fromString(employeeId), modifyFlag)
-                                    when(parentEmployee.getEmployeePart()) {
-                                        in 0..2 -> {
-                                            val employee: Employee = modifyEmployee(employeeId, parentEmployee.getEmployeePart())
-                                            emOperations.updateEmployee(employee)
-                                            break@Loop
-                                        }
-                                        else -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
-                                    }
+                                0 -> {
+                                    val employee: PermanentEmployee = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
+                                    emOperations.updateEmployee(employee)
+                                    break@Loop
                                 }
-                                false -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
+                                1 -> {
+                                    val employee: SalesEmployee = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
+                                    emOperations.updateEmployee(employee)
+                                    break@Loop
+                                }
+                                2 -> {
+                                    val employee: PartTimeEmployee = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
+                                    emOperations.updateEmployee(employee)
+                                    break@Loop
+                                }
+                                else -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
                             }
                         }
                     }
@@ -131,14 +138,14 @@ class EmployeeManager {
                             } catch (e: Exception) {
                                 false
                             }) {
-                                true -> {
+                                in 0..2 -> {
                                     when(emOperations.deleteEmployee(UUID.fromString(employeeId))) {
                                         true -> println("사원 번호 $employeeId 삭제 완료")
                                         false -> println("사원 번호 $employeeId 삭제 실패\n알 수 없는 오류입니다")
                                     }
                                     break@Loop
                                 }
-                                false -> println("사원 번호 $employeeId 삭제 실패\n존재하지 않는 사원 번호입니다")
+                                -1 -> println("사원 번호 $employeeId 삭제 실패\n존재하지 않는 사원 번호입니다")
                             }
                         }
                     }

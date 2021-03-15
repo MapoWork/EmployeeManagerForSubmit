@@ -9,7 +9,7 @@ import kotlin.properties.Delegates
 
 open class Employee {
     private var emNo : UUID
-    private var emPart : Int
+    private var emPart by Delegates.notNull<Int>()
     private var emName by Delegates.notNull<String>()
     private var emDepartment by Delegates.notNull<Department>()
     private var emAge by Delegates.notNull<Int>()
@@ -29,14 +29,12 @@ open class Employee {
             is PermanentEmployee, !is SalesEmployee, !is PartTimeEmployee -> 0
             else -> {
                 when(this) {
-                    is Employee -> 3
                     else -> -1
                 }
             }
         }
     }
     open fun getEmployeeNo() : UUID {
-
         return this.emNo
     }
     open fun getEmployeeDepartment() : Department {
