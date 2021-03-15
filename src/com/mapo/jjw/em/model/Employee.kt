@@ -40,64 +40,74 @@ open class Employee {
     open fun getEmployeeDepartment() : Department {
         return this.emDepartment
     }
-    open fun modifyEmployeeInformation(emName: String, emDepartment: Department, emAge: Int, emAddress: String) {
-        when(emName) {
-            else -> this.emName = emName
+    open fun modifyEmployeeInformation(emName: String?, emDepartment: Department?, emAge: Int?, emAddress: String?) {
+        when{
+            emName != null && emName != "null" && emName.isNotEmpty() -> { this.emName = emName }
+            else -> { }
         }
-        println(emName)
-        when(emDepartment) {
-            else -> this.emDepartment = emDepartment
+        when{
+            emDepartment != null -> { this.emDepartment = emDepartment }
+            else -> { }
         }
-        println(emDepartment)
-        when(emDepartment) {
-            else -> this.emAge = emAge
+        when {
+            emAge != null && emAge >= 20 -> { this.emAge = emAge }
+            else -> { }
         }
-        println(emDepartment)
-        when(emDepartment) {
-            else -> this.emAddress = emAddress
+        when {
+            emAddress != null && emAddress != "null" && emAddress.isNotEmpty() -> { this.emAddress = emAddress }
+            else -> { }
         }
-        println(emAddress)
     }
     open fun updateEmployeeInformation(tempEmployee:Employee) {
         when(tempEmployee.emName) {
+            null -> { }
             else -> this.emName = tempEmployee.emName
         }
-        println(tempEmployee.emName)
         when(tempEmployee.emDepartment) {
+            null -> { }
             else -> this.emDepartment = tempEmployee.emDepartment
         }
-        println(tempEmployee.emDepartment)
-        when(tempEmployee.emDepartment) {
+        when(tempEmployee.emAge) {
+            null -> { }
             else -> this.emAge = tempEmployee.emAge
         }
-        println(tempEmployee.emAge)
-        when(tempEmployee.emDepartment) {
+        when(tempEmployee.emAddress) {
+            null -> { }
             else -> this.emAddress = tempEmployee.emAddress
         }
-        println(tempEmployee.emAddress)
     }
     open fun modifyEmployeeSalary() {}
-    open fun modifyEmployeeSalary(emSalaryVariable: Long) {}
+    open fun modifyEmployeeSalary(emSalaryVariable: Long?) {}
+    open fun modifyEmployeeSalary(emSalary: Long?, emSalesPerformance: Long?) { }
     open fun calculateSalary() : Long = 0
     override fun toString() : String {
-        val emPart : String = when(getEmployeePart()) {
+        val emPartString : String = when(getEmployeePart()) {
             2 -> "파트 타임"
             1 -> "영업 사원"
             0 -> "정규 사원"
             else -> "오류"
         }
-        return "[부서 - ${emDepartment.deptCode} : ${emDepartment.deptName}] | [ 구분 - ${emPart}] | [ 사원 번호 - ${emNo}] | [이름 - ${emName}] | [나이 - ${emAge}] | [주소 - ${emAddress}] | [월급 - ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(calculateSalary())}]"
+        return "[부서 - ${emDepartment.deptCode} : ${emDepartment.deptName}] | [ 구분 - ${emPartString}] | [ 사원 번호 - ${emNo}] | [이름 - ${emName}] | [나이 - ${emAge}] | [주소 - ${emAddress}] | [월급 - ${NumberFormat.getCurrencyInstance(Locale.getDefault()).format(calculateSalary())}]"
     }
 }
 class PartTimeEmployee : Employee {
     private var emWorkingHour by Delegates.notNull<Long>()
-    private var emHourlyRate by Delegates.notNull<Long>()
+    private var emHourlyRate : Long
     constructor(emNo : UUID, emPart: Int, emName : String, emDepartment : Department, emAge : Int, emAddress : String, emWorkingHour : Long) : super(emNo, emPart, emName, emDepartment, emAge, emAddress) {
         this.emWorkingHour = emWorkingHour
         this.emHourlyRate = HOURLY_RATE.toLong()
     }
-    override fun modifyEmployeeSalary(emWorkingHour: Long) {
-        this.emWorkingHour = emWorkingHour
+    open fun updateEmployeeSalary(tempEmployee:PartTimeEmployee) {
+        when(tempEmployee.emWorkingHour) {
+            null -> { }
+            else -> this.emWorkingHour = tempEmployee.emWorkingHour
+        }
+    }
+    override fun modifyEmployeeSalary(emWorkingHour: Long?) {
+        when {
+            emWorkingHour != null && emWorkingHour > 0 -> { this.emWorkingHour = emWorkingHour }
+            else -> { }
+        }
     }
     override fun calculateSalary() = emWorkingHour.times(emHourlyRate).times(365).times(TAX_RATE).roundToLong()
 }
@@ -106,10 +116,18 @@ open class PermanentEmployee : Employee {
     constructor(emNo : UUID, emPart: Int, emName : String, emDepartment : Department, emAge : Int, emAddress : String, emSalary : Long) : super(emNo, emPart, emName, emDepartment, emAge, emAddress) {
         this.emSalary = emSalary
     }
-    override fun modifyEmployeeSalary(emSalary: Long) {
-        this.emSalary = emSalary
+    open fun updateEmployeeSalary(tempEmployee:PermanentEmployee) {
+        when(tempEmployee.emSalary) {
+            null -> { }
+            else -> this.emSalary = tempEmployee.emSalary
+        }
     }
-    open fun modifyEmployeeSalary(emSalary: Long, emSalesPerformance: Long) {}
+    override fun modifyEmployeeSalary(emSalary: Long?) {
+        when {
+            emSalary != null && emSalary > 0 -> { this.emSalary = emSalary }
+            else -> { }
+        }
+    }
     override fun calculateSalary(): Long = (emSalary.div(12) * (1 - TAX_RATE)).roundToLong()
 }
 class SalesEmployee : PermanentEmployee {
@@ -117,9 +135,25 @@ class SalesEmployee : PermanentEmployee {
     constructor(emNo : UUID, emPart: Int, emName : String, emDepartment : Department, emAge : Int, emAddress : String, emSalary : Long, emSalesPerformance : Long) : super(emNo, emPart, emName, emDepartment, emAge, emAddress, emSalary) {
         this.emSalesPerformance = emSalesPerformance
     }
-    override fun modifyEmployeeSalary(emSalary: Long, emSalesPerformance: Long) {
-        this.emSalary = emSalary
-        this.emSalesPerformance = emSalesPerformance
+    open fun updateEmployeeSalary(tempEmployee:SalesEmployee) {
+        when(tempEmployee.emSalary) {
+            null -> { }
+            else -> this.emSalary = tempEmployee.emSalary
+        }
+        when(tempEmployee.emSalesPerformance) {
+            null -> { }
+            else -> this.emSalesPerformance = tempEmployee.emSalesPerformance
+        }
+    }
+    override fun modifyEmployeeSalary(emSalary: Long?, emSalesPerformance: Long?) {
+        when {
+            emSalary != null && emSalary > 0 -> { this.emSalary = emSalary }
+            else -> { }
+        }
+        when {
+            emSalesPerformance != null && emSalesPerformance > 0 -> { this.emSalesPerformance = emSalesPerformance }
+            else -> { }
+        }
     }
     override fun calculateSalary() = ((emSalary.div(12) + (emSalesPerformance.times(0.05))) * (1 - TAX_RATE)).roundToLong()
 }

@@ -50,14 +50,17 @@ class EmployeeDataRepository {
     fun getEmployeeById(employeeNo : UUID, employeePart : Int): Optional<Employee> {
         return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.filter{
             employee -> employee.getEmployeePart() == employeePart
-        }.findAny()
+        }.sorted().findAny()
     }
     fun getAllEmployee(): MutableList<Employee> {
         return this.employeeDirectory
     }
-    fun getDepartmentEmployee(employeeDepartment: Department): Array<out Employee>? {
-        return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeDepartment() == employeeDepartment }.toArray<Employee>({length -> arrayOfNulls(length)})}
-    fun isEmployeeExist(employeeNo: UUID) : Int {
+    fun getDepartmentEmployee(employeeDepartment: Department): MutableList<Employee> {
+        val employeeDepartmentDirectory = mutableListOf<Employee>()
+        this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeDepartment() == employeeDepartment }.sorted().forEach(employeeDepartmentDirectory::add)
+        return employeeDepartmentDirectory
+    }
+    fun getEmployeeExistInformation(employeeNo: UUID) : Int {
         val employeeFlag : Boolean = this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }
         return when(employeeFlag) {
             true -> {

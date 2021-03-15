@@ -1,20 +1,18 @@
 package com.mapo.jjw.em.operations
 
-import com.mapo.jjw.em.model.Department
-import com.mapo.jjw.em.model.Employee
+import com.mapo.jjw.em.model.*
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class EMOperationsImpl : EMOperations {
+class EMOperationsImplement : EMOperations {
     private var employeeDataRepo = EmployeeDataRepository()
     override fun getAllEmployee() : List<Employee> {
         return employeeDataRepo.getAllEmployee()
     }
 
-    override fun getDepartmentEmployee(department: Department): Array<out Employee>? {
-        val employees: Array<out Employee>? = employeeDataRepo.getDepartmentEmployee(department)
-        return employees
+    override fun getDepartmentEmployee(department: Department): List<Employee> {
+        return employeeDataRepo.getDepartmentEmployee(department)
     }
     override fun getEmployeeById(employeeId : UUID, employeePart : Int) : Employee {
         when (employeePart) {
@@ -35,8 +33,6 @@ class EMOperationsImpl : EMOperations {
                 return employee.get()
             }
         }
-        val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, employeePart)
-        return employee.get()
     }
     override fun createEmployee(employee: Employee) : Employee? {
         return if (employeeDataRepo.addEmployee(employee)) employee else null
@@ -46,6 +42,17 @@ class EMOperationsImpl : EMOperations {
         if (employeeFromOperator.isPresent) {
             val employeeValue = employeeFromOperator.get()
             employeeValue.updateEmployeeInformation(employee)
+            when(employeeValue.getEmployeePart()) {
+                0 -> {
+                    (employeeValue as PermanentEmployee).updateEmployeeSalary(employeeValue)
+                }
+                1 -> {
+                    (employeeValue as SalesEmployee).updateEmployeeInformation(employeeValue)
+                }
+                2 -> {
+                    (employeeValue as PartTimeEmployee).updateEmployeeInformation(employeeValue)
+                }
+            }
         }
         return employee
     }
@@ -65,7 +72,7 @@ class EMOperationsImpl : EMOperations {
         }
     }
     override fun isValidEmployee(employeeId: UUID) : Int {
-        return employeeDataRepo.isEmployeeExist(employeeId)
+        return employeeDataRepo.getEmployeeExistInformation(employeeId)
     }
     override fun viewAllEmployee() {
         var salaryTotal : Long = 0

@@ -2,9 +2,7 @@ package com.mapo.jjw.em
 
 import com.mapo.jjw.em.model.*
 import com.mapo.jjw.em.model.Department.*
-import com.mapo.jjw.em.operations.EMOperations
-import com.mapo.jjw.em.operations.EMOperationsImpl
-import javafx.scene.control.SeparatorMenuItem
+import com.mapo.jjw.em.operations.EMOperationsImplement
 import java.lang.Exception
 import java.util.*
 import kotlin.system.exitProcess
@@ -16,7 +14,7 @@ const val HOURLY_RATE = 25000
 
 class EmployeeManager {
     private val emScanner = Scanner(System.`in`)
-    private val emOperations = EMOperationsImpl()
+    private val emOperations = EMOperationsImplement()
     companion object {
         fun makeUuid():UUID {
             val uuidString:String = UUID.randomUUID().toString()
@@ -104,27 +102,28 @@ class EmployeeManager {
                 when (val employeeId = emScanner.nextLine()) {
                     "취소" -> break@loop
                     else -> {
-                        when (try {
+                        try {
                             modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId))
                         } catch (e: Exception) {
-                            -1
-                        }) {
+                            modifyFlag = -1
+                        }
+                        when (modifyFlag) {
                             0 -> {
-                                val employee: PermanentEmployee = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
-                                emOperations.updateEmployee(employee)
+                                val employee: PermanentEmployee? = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
+                                employee?.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
                             1 -> {
-                                val employee: SalesEmployee = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
-                                emOperations.updateEmployee(employee)
+                                val employee: SalesEmployee? = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
+                                employee?.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
                             2 -> {
-                                val employee: PartTimeEmployee = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
-                                emOperations.updateEmployee(employee)
+                                val employee: PartTimeEmployee? = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
+                                employee?.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
-                            else -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
+                            else -> println("${modifyFlag} 사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
                         }
                     }
                 }
@@ -157,24 +156,10 @@ class EmployeeManager {
         7 -> exitProcess(0)
         else -> println("잘못된 입력입니다")
     }
-    private fun modifyEmployee(employeeId:String, employeePart:Int): Employee {
-        var employee : Any = 0
-            when(employeePart) {
-                0 -> {
-                    employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as PermanentEmployee
-                }
-                1 -> {
-                    employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as SalesEmployee
-                }
-                2 -> {
-                    employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as PartTimeEmployee
-                }
-                else -> { }
-            }
+    private fun modifyEmployee(employeeId:String, employeePart:Int): Employee? {
+        val mapModifyInfo : MutableMap<String,String> = mutableMapOf()
             loop@ do {
-                val mapModifyInfo : MutableMap<String,String> = mutableMapOf()
                 var emDepartment: Int
-                employee as Employee
                 println("변경을 원하는 정보를 입력하세요")
                 println("\n[1] 이름\n[2] 나이\n[3] 주소\n[4] 부서\n[5] 완료")
                 when (try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
@@ -185,8 +170,10 @@ class EmployeeManager {
                     2 -> {
                         loop@ do {
                             println("나이를 입력하세요")
-                            when(val emAge : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
-                                -1 -> println("잘못된 입력입니다")
+                            val emAge : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
+                            when {
+                                emAge !is Number -> println("잘못된 입력입니다")
+                                emAge < 0 -> println("잘못된 입력입니다")
                                 else -> {
                                     mapModifyInfo.put("age",emAge.toString())
                                     break@loop
@@ -227,24 +214,36 @@ class EmployeeManager {
                         } while (true)
                     }
                     5 -> {
-                        when(employee) {
-                            is PartTimeEmployee -> {
+                        when(emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart).getEmployeePart()) {
+                            2 -> {
+                                val employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as PartTimeEmployee
                                 loop@ do {
                                     println("일간 근무 시간을 시간 단위로 입력하세요")
-                                    when(val emWorkingHour : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
-                                        -1 -> println("잘못된 입력입니다")
+                                    val emWorkingHour : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
+                                    when {
+                                        emWorkingHour !is Number -> println("잘못된 입력입니다")
+                                        emWorkingHour < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("workingHour", emWorkingHour.toString())
                                             break@loop
                                         }
                                     }
                                 } while (true)
+                                employee.modifyEmployeeInformation( try { mapModifyInfo.get("name").toString() } catch(e:Exception) { null },
+                                    try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("address").toString() } catch(e:Exception) { null } )
+                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("workinghour")?.toLong() } catch(e:Exception) { null } )
+                                return employee
                             }
-                            is SalesEmployee -> {
+                            1 -> {
+                                val employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as SalesEmployee
                                 loop@ do {
                                     println("연간 급여 총액을 원 단위로 입력하세요")
-                                    when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
-                                        -1 -> println("잘못된 입력입니다")
+                                    val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
+                                    when {
+                                        emSalary !is Number -> println("잘못된 입력입니다")
+                                        emSalary < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salary", emSalary.toString())
                                             break@loop
@@ -253,58 +252,47 @@ class EmployeeManager {
                                 } while (true)
                                 loop@ do {
                                     println("연간 영업 인센티브 총액을 원 단위로 입력하세요")
-                                    when(val emSalesPerformance : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
-                                        -1 -> println("잘못된 입력입니다")
+                                    val emSalesPerformance : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
+                                    when {
+                                        emSalesPerformance !is Number -> println("잘못된 입력입니다")
+                                        emSalesPerformance < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salesperformance", emSalesPerformance.toString())
                                             break@loop
                                         }
                                     }
                                 } while (true)
+                                employee.modifyEmployeeInformation( try { mapModifyInfo.get("name").toString() } catch(e:Exception) { null },
+                                    try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("address").toString() } catch(e:Exception) { null } )
+                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("salesperformance")?.toLong() } catch(e:Exception) { null } )
+                                return employee
                             }
-                            is PermanentEmployee, !is SalesEmployee, !is PartTimeEmployee -> {
+                            0 -> {
+                                val employee = emOperations.getEmployeeById(UUID.fromString(employeeId), employeePart) as PermanentEmployee
                                 loop@ do {
                                     println("연간 급여 총액을 원 단위로 입력하세요")
-                                    when(val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 } ) {
-                                        -1 -> println("잘못된 입력입니다")
+                                    val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
+                                    when {
+                                        emSalary !is Number -> println("잘못된 입력입니다")
+                                        emSalary < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salary", emSalary.toString())
                                             break@loop
                                         }
                                     }
                                 } while (true)
+                                employee.modifyEmployeeInformation( try { mapModifyInfo.get("name").toString() } catch(e:Exception) { null },
+                                    try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
+                                    try { mapModifyInfo.get("address") } catch(e:Exception) { null } )
+                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null } )
+                                return employee
                             }
+                            else -> { return null }
                         }
-                        println(when(employee) {
-                            is PermanentEmployee -> { "정규 사원 객체" }
-                            is PartTimeEmployee -> { "파트 타임 객체" }
-                            is SalesEmployee -> { "영업 사원 객체" }
-                            else -> { "null" }
-                        })
-                        println(mapModifyInfo.get("name").toString())
-                        println(mapModifyInfo.get("department").toString())
-                        println(mapModifyInfo.get("age").toString())
-                        println(mapModifyInfo.get("address").toString())
-                        println(mapModifyInfo.get("salary").toString())
-
-                        try { mapModifyInfo.get("name").toString() } catch(e:Exception) { null }?.let {
-                            try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null }?.let { it1 ->
-                                try {
-                                    mapModifyInfo.get("age")?.toInt()
-                                } catch(e:Exception) { null }?.let { it2 ->
-                                    try { mapModifyInfo.get("address").toString() } catch(e:Exception) { null }?.let { it3 ->
-                                        employee.modifyEmployeeInformation(it, it1, it2, it3)
-                                    }
-                                }
-                            }
-                        }
-
-                        /*
-                        when(mapModifyInfo.get("salary") && mapModifyInfo.get("salesperformance")) {
-
-                        }
-                         */
-                        return employee
                         break@loop
                     }
                     else -> println("잘못된 입력입니다")
