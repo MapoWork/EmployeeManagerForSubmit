@@ -11,7 +11,30 @@ class EMOperationsImpl : EMOperations {
     override fun getAllEmployee() : List<Employee> {
         return employeeDataRepo.getAllEmployee()
     }
+
+    override fun getDepartmentEmployee(department: Department): Array<out Employee>? {
+        val employees: Array<out Employee>? = employeeDataRepo.getDepartmentEmployee(department)
+        return employees
+    }
     override fun getEmployeeById(employeeId : UUID, employeePart : Int) : Employee {
+        when (employeePart) {
+            0 -> {
+                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, employeePart)
+                return employee.get()
+            }
+            1 -> {
+                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, employeePart)
+                return employee.get()
+            }
+            2 -> {
+                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, employeePart)
+                return employee.get()
+            }
+            else -> {
+                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, -1)
+                return employee.get()
+            }
+        }
         val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, employeePart)
         return employee.get()
     }
@@ -28,8 +51,8 @@ class EMOperationsImpl : EMOperations {
     }
     override fun deleteEmployee(employeeId: UUID) : Boolean {
         return when(isValidEmployee(employeeId)) {
-            true -> {
-                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, 3)
+            in 0..2 -> {
+                val employee: Optional<Employee> = employeeDataRepo.getEmployeeById(employeeId, isValidEmployee(employeeId))
                 when (employee.isPresent) {
                     true -> {
                         employeeDataRepo.removeEmployee(employee)
@@ -38,7 +61,7 @@ class EMOperationsImpl : EMOperations {
                     false -> false
                 }
             }
-            false -> false
+            else -> false
         }
     }
     override fun isValidEmployee(employeeId: UUID) : Int {
@@ -75,11 +98,11 @@ class EMOperationsImpl : EMOperations {
     }
     override fun viewEmployeeById(id: UUID) {
         when(isValidEmployee(id)) {
-            true -> {
-                val employee = getEmployeeById(id, 3)
+            in 0..2 -> {
+                val employee = getEmployeeById(id, isValidEmployee(id))
                 println("해당 사원 번호 조회 내용은 다음과 같습니다 :\n${employee.toString()}")
             }
-            false -> println("사원 번호 $id 조회 실패\n존재하지 않는 사원 번호입니다")
+            else -> println("사원 번호 $id 조회 실패\n존재하지 않는 사원 번호입니다")
         }
     }
 }

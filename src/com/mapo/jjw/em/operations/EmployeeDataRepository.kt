@@ -55,11 +55,16 @@ class EmployeeDataRepository {
     fun getAllEmployee(): MutableList<Employee> {
         return this.employeeDirectory
     }
+    fun getDepartmentEmployee(employeeDepartment: Department): Array<out Employee>? {
+        return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeDepartment() == employeeDepartment }.toArray<Employee>({length -> arrayOfNulls(length)})}
     fun isEmployeeExist(employeeNo: UUID) : Int {
         val employeeFlag : Boolean = this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }
-        return when(employeeFlag) {
-            true -> this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.map(Employee::getEmployeePart).
-            false -> -1
+        when(employeeFlag) {
+            true -> {
+                val employee: Optional<Employee> = this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.findAny()
+                return employee.get().getEmployeePart()
+            }
+            false -> return -1
         }
     }
 }

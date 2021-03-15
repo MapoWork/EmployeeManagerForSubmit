@@ -6,6 +6,7 @@ import java.util.*
 
 interface EMOperations {
     fun getAllEmployee() : List<Employee>
+    fun getDepartmentEmployee(department: Department) : Array<out Employee>?
     fun getEmployeeById(employeeId: UUID, employeePart: Int) : Employee
     fun createEmployee(employee: Employee) : Employee?
     fun updateEmployee(employee: Employee) : Employee

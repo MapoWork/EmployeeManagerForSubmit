@@ -2,6 +2,7 @@ package com.mapo.jjw.em
 
 import com.mapo.jjw.em.model.*
 import com.mapo.jjw.em.model.Department.*
+import com.mapo.jjw.em.operations.EMOperations
 import com.mapo.jjw.em.operations.EMOperationsImpl
 import java.lang.Exception
 import java.util.*
@@ -96,13 +97,14 @@ class EmployeeManager {
             }
             5 -> {
                 Loop@do {
+                    var modifyFlag : Int = 0
                     println("정보 변경을 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
                     when (val employeeId = emScanner.nextLine()) {
                         "취소" -> break
                         else -> {
-                            when ( try { emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
+                            when ( try { modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
                                 true -> {
-                                    val parentEmployee: Employee = emOperations.getEmployeeById(UUID.fromString(employeeId), 3)
+                                    val parentEmployee: Employee = emOperations.getEmployeeById(UUID.fromString(employeeId), modifyFlag)
                                     when(parentEmployee.getEmployeePart()) {
                                         in 0..2 -> {
                                             val employee: Employee = modifyEmployee(employeeId, parentEmployee.getEmployeePart())
