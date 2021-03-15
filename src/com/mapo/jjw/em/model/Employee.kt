@@ -115,5 +115,5 @@ class SalesEmployee : PermanentEmployee {
         this.emSalary = emSalary
         this.emSalesPerformance = emSalesPerformance
     }
-    override fun calculateSalary() = ((emSalary + (emSalesPerformance.times(0.05))) * (1 - TAX_RATE)).roundToLong()
+    override fun calculateSalary() = ((emSalary.div(12) + (emSalesPerformance.times(0.05))) * (1 - TAX_RATE)).roundToLong()
 }
