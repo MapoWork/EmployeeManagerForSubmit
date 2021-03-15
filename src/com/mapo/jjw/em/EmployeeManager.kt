@@ -97,33 +97,33 @@ class EmployeeManager {
         }
         5 -> {
             loop@do {
-                var modifyFlag : Int = 0
+                var modifyFlag: Int
                 println("정보 변경을 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
                 when (val employeeId = emScanner.nextLine()) {
                     "취소" -> break@loop
                     else -> {
-                        try {
-                            modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId))
+                        modifyFlag = try {
+                            emOperations.isValidEmployee(UUID.fromString(employeeId))
                         } catch (e: Exception) {
-                            modifyFlag = -1
+                            -1
                         }
                         when (modifyFlag) {
                             0 -> {
-                                val employee: PermanentEmployee? = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
-                                employee?.let { emOperations.updateEmployee(it) }
+                                val employee: PermanentEmployee = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
+                                employee.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
                             1 -> {
-                                val employee: SalesEmployee? = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
-                                employee?.let { emOperations.updateEmployee(it) }
+                                val employee: SalesEmployee = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
+                                employee.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
                             2 -> {
-                                val employee: PartTimeEmployee? = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
-                                employee?.let { emOperations.updateEmployee(it) }
+                                val employee: PartTimeEmployee = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
+                                employee.let { emOperations.updateEmployee(it) }
                                 break@loop
                             }
-                            else -> println("${modifyFlag} 사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
+                            else -> println("$modifyFlag 사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
                         }
                     }
                 }
@@ -172,7 +172,6 @@ class EmployeeManager {
                             println("나이를 입력하세요")
                             val emAge : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
                             when {
-                                emAge !is Number -> println("잘못된 입력입니다")
                                 emAge < 0 -> println("잘못된 입력입니다")
                                 else -> {
                                     mapModifyInfo.put("age",emAge.toString())
@@ -221,7 +220,6 @@ class EmployeeManager {
                                     println("일간 근무 시간을 시간 단위로 입력하세요")
                                     val emWorkingHour : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
                                     when {
-                                        emWorkingHour !is Number -> println("잘못된 입력입니다")
                                         emWorkingHour < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("workingHour", emWorkingHour.toString())
@@ -242,7 +240,6 @@ class EmployeeManager {
                                     println("연간 급여 총액을 원 단위로 입력하세요")
                                     val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
                                     when {
-                                        emSalary !is Number -> println("잘못된 입력입니다")
                                         emSalary < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salary", emSalary.toString())
@@ -254,7 +251,6 @@ class EmployeeManager {
                                     println("연간 영업 인센티브 총액을 원 단위로 입력하세요")
                                     val emSalesPerformance : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
                                     when {
-                                        emSalesPerformance !is Number -> println("잘못된 입력입니다")
                                         emSalesPerformance < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salesperformance", emSalesPerformance.toString())
@@ -276,7 +272,6 @@ class EmployeeManager {
                                     println("연간 급여 총액을 원 단위로 입력하세요")
                                     val emSalary : Int = try { emScanner.nextLine().toInt() } catch (e:Exception) { -1 }
                                     when {
-                                        emSalary !is Number -> println("잘못된 입력입니다")
                                         emSalary < 0 -> println("잘못된 입력입니다")
                                         else -> {
                                             mapModifyInfo.put("salary", emSalary.toString())
@@ -293,6 +288,7 @@ class EmployeeManager {
                             }
                             else -> { return null }
                         }
+                        @Suppress("UNREACHABLE_CODE")
                         break@loop
                     }
                     else -> println("잘못된 입력입니다")
@@ -302,7 +298,7 @@ class EmployeeManager {
     private fun registerEmployee(): Employee {
         loop@ do {
             val arrayRegisterInfo = ArrayList<String>()
-            var emDepartment = 0
+            @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNREACHABLE_CODE") var emDepartment = 0
             var emType = 0
             println("등록하실 사원 정보를 입력하세요")
             loop@ do {
@@ -373,6 +369,7 @@ class EmployeeManager {
                         when(val employee = PermanentEmployee(makeUuid(), emType, arrayRegisterInfo[1], valueOf(arrayRegisterInfo[0]),arrayRegisterInfo[2].toInt(),arrayRegisterInfo[3],arrayRegisterInfo[4].toLong())) {
                             else -> return employee
                         }
+                        @Suppress("UNREACHABLE_CODE")
                         break
                     }
                     2 -> {
@@ -399,6 +396,7 @@ class EmployeeManager {
                         when(val employee = SalesEmployee(makeUuid(), emType, arrayRegisterInfo[1], valueOf(arrayRegisterInfo[0]),arrayRegisterInfo[2].toInt(),arrayRegisterInfo[3],arrayRegisterInfo[4].toLong(),arrayRegisterInfo[5].toLong())) {
                             else -> return employee
                         }
+                        @Suppress("UNREACHABLE_CODE")
                         break
                     }
                     3 -> {
@@ -415,9 +413,10 @@ class EmployeeManager {
                         when(val employee = PartTimeEmployee(makeUuid(), emType, arrayRegisterInfo[1], valueOf(arrayRegisterInfo[0]),arrayRegisterInfo[2].toInt(),arrayRegisterInfo[3],arrayRegisterInfo[4].toLong())) {
                             else -> return employee
                         }
+                        @Suppress("UNREACHABLE_CODE")
                         break
                     }
-                    else -> null
+                    else -> { }
                 }
             } while (true)
         } while (true)

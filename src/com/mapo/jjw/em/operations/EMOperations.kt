@@ -2,7 +2,6 @@ package com.mapo.jjw.em.operations
 
 import com.mapo.jjw.em.model.Department
 import com.mapo.jjw.em.model.Employee
-import com.mapo.jjw.em.model.PermanentEmployee
 import java.util.*
 
 interface EMOperations {

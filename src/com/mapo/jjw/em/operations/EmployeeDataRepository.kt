@@ -61,8 +61,7 @@ class EmployeeDataRepository {
         return employeeDepartmentDirectory
     }
     fun getEmployeeExistInformation(employeeNo: UUID) : Int {
-        val employeeFlag : Boolean = this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }
-        return when(employeeFlag) {
+        return when(this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }) {
             true -> {
                 this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.findAny().get().getEmployeePart()
             }

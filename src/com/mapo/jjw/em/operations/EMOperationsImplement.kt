@@ -79,7 +79,7 @@ class EMOperationsImplement : EMOperations {
         println("전체 사원 조회 내용은 다음과 같습니다 :\n")
         val counter =  AtomicInteger()
         for (employee in employeeDataRepo.getAllEmployee()) {
-            println("사원 ${counter.incrementAndGet()}\n${employee.toString()}")
+            println("사원 ${counter.incrementAndGet()}\n$employee")
             salaryTotal += employee.calculateSalary()
         }
         println("\n[전체 사원 수] ${counter.get()}명")
@@ -93,7 +93,7 @@ class EMOperationsImplement : EMOperations {
         for (employee in employeeDataRepo.getAllEmployee()) {
             when(employee.getEmployeeDepartment().deptName) {
                 department.deptName -> {
-                    println("사원 ${counter.incrementAndGet()}\n${employee.toString()}")
+                    println("사원 ${counter.incrementAndGet()}\n$employee")
                     salaryTotal += employee.calculateSalary()
                 }
                 else -> { }
@@ -107,7 +107,7 @@ class EMOperationsImplement : EMOperations {
         when(isValidEmployee(employeeId)) {
             in 0..2 -> {
                 val employee = getEmployeeById(employeeId, isValidEmployee(employeeId))
-                println("해당 사원 번호 조회 내용은 다음과 같습니다 :\n${employee.toString()}")
+                println("해당 사원 번호 조회 내용은 다음과 같습니다 :\n$employee")
             }
             else -> println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
         }
