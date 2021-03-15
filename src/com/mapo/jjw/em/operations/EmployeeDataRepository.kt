@@ -59,11 +59,11 @@ class EmployeeDataRepository {
         return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeDepartment() == employeeDepartment }.toArray<Employee>({length -> arrayOfNulls(length)})}
     fun isEmployeeExist(employeeNo: UUID) : Int {
         val employeeFlag : Boolean = this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }
-        when(employeeFlag) {
+        return when(employeeFlag) {
             true -> {
-                return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.findAny().get().getEmployeePart()
+                this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.findAny().get().getEmployeePart()
             }
-            false -> return -1
+            false -> -1
         }
     }
 }

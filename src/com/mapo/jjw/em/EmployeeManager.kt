@@ -37,123 +37,125 @@ class EmployeeManager {
             return UUID(msb, lsb)
         }
     }
-    fun doOperations(emCommand: Int) {
-        when (emCommand) {
-            1 -> {
-                emOperations.viewAllEmployee()
-            }
-            2 -> {
-                val employeeDepartment : Department
-                loop@ do {
-                    println("조회를 원하는 부서를 입력하세요")
-                    println("[1000] 개발 팀 \n[1001] 영업 팀\n[1002] 고객 대응 팀\n[1003] 사무직")
-                    val emDepartment : Int = try {
-                        emScanner.nextLine().toInt()
-                    } catch(e:Exception) { -1 }
-                    when(emDepartment) {
-                        1000 -> {
-                            employeeDepartment = RND_LAB
-                            break@loop
-                        }
-                        1001 -> {
-                            employeeDepartment = MARKETING_TEAM
-                            break@loop
-                        }
-                        1002 -> {
-                            employeeDepartment = CS_TEAM
-                            break@loop
-                        }
-                        1003 -> {
-                            employeeDepartment = GENERAL_AFFAIRS
-                            break@loop
-                        }
-                        else -> println("존재하지 않는 부서입니다\n해당되는 부서 번호를 다시 입력해주세요")
-                    }
-                } while (true)
-                emOperations.viewDeptEmployee(employeeDepartment)
-            }
-            3 -> {
-                Loop@do {
-                    println("조회를 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
-                    when (val employeeId = emScanner.nextLine()) {
-                        "취소" -> break@Loop
-                        else -> {
-                            when ( try { emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
-                                in 0..2 -> {
-                                    emOperations.viewEmployeeById(UUID.fromString(employeeId))
-                                    break@Loop
-                                }
-                                else -> {
-                                    println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
-                                }
-                            }
-                        }
-                    }
-                } while (true)
-            }
-            4 -> {
-                val employee: Employee = registerEmployee()
-                when(emOperations.createEmployee(employee)) {
-                    null -> println("신규 사원 등록 실패\n알 수 없는 오류입니다")
-                    else -> println("$employee\n신규 사원 등록 성공")
-                }
-            }
-            5 -> {
-                Loop@do {
-                    var modifyFlag : Int = 0
-                    println("정보 변경을 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
-                    when (val employeeId = emScanner.nextLine()) {
-                        "취소" -> break
-                        else -> {
-                            when ( try { modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { false } ) {
-                                0 -> {
-                                    val employee: PermanentEmployee = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
-                                    emOperations.updateEmployee(employee)
-                                    break@Loop
-                                }
-                                1 -> {
-                                    val employee: SalesEmployee = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
-                                    emOperations.updateEmployee(employee)
-                                    break@Loop
-                                }
-                                2 -> {
-                                    val employee: PartTimeEmployee = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
-                                    emOperations.updateEmployee(employee)
-                                    break@Loop
-                                }
-                                else -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
-                            }
-                        }
-                    }
-                } while (true)
-            }
-            6 -> {
-                Loop@do {
-                    println("삭제를 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
-                    when (val employeeId = emScanner.nextLine()) {
-                        "취소" -> break
-                        else -> {
-                            when (try {
-                                emOperations.isValidEmployee(UUID.fromString(employeeId))
-                            } catch (e: Exception) {
-                                false
-                            }) {
-                                in 0..2 -> {
-                                    when(emOperations.deleteEmployee(UUID.fromString(employeeId))) {
-                                        true -> println("사원 번호 $employeeId 삭제 완료")
-                                        false -> println("사원 번호 $employeeId 삭제 실패\n알 수 없는 오류입니다")
-                                    }
-                                    break@Loop
-                                }
-                                -1 -> println("사원 번호 $employeeId 삭제 실패\n존재하지 않는 사원 번호입니다")
-                            }
-                        }
-                    }
-                } while (true)
-            }
-            7 -> exitProcess(0)
-            else -> println("잘못된 입력입니다")
+    fun doOperations(emCommand: Int) = when (emCommand) {
+        1 -> {
+            emOperations.viewAllEmployee()
         }
+        2 -> {
+            val employeeDepartment : Department
+            loop@ do {
+                println("조회를 원하는 부서를 입력하세요")
+                println("[1000] 개발 팀 \n[1001] 영업 팀\n[1002] 고객 대응 팀\n[1003] 사무직")
+                val emDepartment : Int = try {
+                    emScanner.nextLine().toInt()
+                } catch(e:Exception) { -1 }
+                when(emDepartment) {
+                    1000 -> {
+                        employeeDepartment = RND_LAB
+                        break@loop
+                    }
+                    1001 -> {
+                        employeeDepartment = MARKETING_TEAM
+                        break@loop
+                    }
+                    1002 -> {
+                        employeeDepartment = CS_TEAM
+                        break@loop
+                    }
+                    1003 -> {
+                        employeeDepartment = GENERAL_AFFAIRS
+                        break@loop
+                    }
+                    else -> println("존재하지 않는 부서입니다\n해당되는 부서 번호를 다시 입력해주세요")
+                }
+            } while (true)
+            emOperations.viewDeptEmployee(employeeDepartment)
+        }
+        3 -> {
+            loop@do {
+                println("조회를 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
+                when (val employeeId = emScanner.nextLine()) {
+                    "취소" -> break@loop
+                    else -> {
+                        when ( try { emOperations.isValidEmployee(UUID.fromString(employeeId)) } catch (e: Exception) { -1 } ) {
+                            in 0..2 -> {
+                                emOperations.viewEmployeeById(UUID.fromString(employeeId))
+                                break@loop
+                            }
+                            else -> {
+                                println("사원 번호 $employeeId 조회 실패\n존재하지 않는 사원 번호입니다")
+                            }
+                        }
+                    }
+                }
+            } while (true)
+        }
+        4 -> {
+            val employee: Employee = registerEmployee()
+            when(emOperations.createEmployee(employee)) {
+                null -> println("신규 사원 등록 실패\n알 수 없는 오류입니다")
+                else -> println("$employee\n신규 사원 등록 성공")
+            }
+        }
+        5 -> {
+            loop@do {
+                var modifyFlag : Int = 0
+                println("정보 변경을 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
+                when (val employeeId = emScanner.nextLine()) {
+                    "취소" -> break@loop
+                    else -> {
+                        when (try {
+                            modifyFlag = emOperations.isValidEmployee(UUID.fromString(employeeId))
+                        } catch (e: Exception) {
+                            -1
+                        }) {
+                            0 -> {
+                                val employee: PermanentEmployee = modifyEmployee(employeeId, modifyFlag) as PermanentEmployee
+                                emOperations.updateEmployee(employee)
+                                break@loop
+                            }
+                            1 -> {
+                                val employee: SalesEmployee = modifyEmployee(employeeId, modifyFlag) as SalesEmployee
+                                emOperations.updateEmployee(employee)
+                                break@loop
+                            }
+                            2 -> {
+                                val employee: PartTimeEmployee = modifyEmployee(employeeId, modifyFlag) as PartTimeEmployee
+                                emOperations.updateEmployee(employee)
+                                break@loop
+                            }
+                            else -> println("사원 번호 $employeeId 정보 변경 실패\n존재하지 않는 사원 번호입니다")
+                        }
+                    }
+                }
+            } while (true)
+        }
+        6 -> {
+            loop@do {
+                println("삭제를 원하는 사원 번호를 입력하세요\n[취소] 이전 단계로 이동")
+                when (val employeeId = emScanner.nextLine()) {
+                    "취소" -> break
+                    else -> {
+                        when (try {
+                            emOperations.isValidEmployee(UUID.fromString(employeeId))
+                        } catch (e: Exception) {
+                            -1
+                        }) {
+                            in 0..2 -> {
+                                when(emOperations.deleteEmployee(UUID.fromString(employeeId))) {
+                                    true -> println("사원 번호 $employeeId 삭제 완료")
+                                    false -> println("사원 번호 $employeeId 삭제 실패\n알 수 없는 오류입니다")
+                                }
+                                break@loop
+                            }
+                            -1 -> println("사원 번호 $employeeId 삭제 실패\n존재하지 않는 사원 번호입니다")
+                        }
+                    }
+                }
+            } while (true)
+        }
+        7 -> exitProcess(0)
+        else -> println("잘못된 입력입니다")
     }
     private fun modifyEmployee(employeeId:String, employeePart:Int): Employee {
         var employee : Any = 0
