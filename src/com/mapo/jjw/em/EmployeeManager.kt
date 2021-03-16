@@ -9,12 +9,25 @@ import kotlin.system.exitProcess
 import java.util.UUID
 import kotlin.collections.ArrayList
 
-const val TAX_RATE = 0.08F
-const val HOURLY_RATE = 25000
+const val TAX_RATE = 0.08F     // 세율 - 월급 계산 시 일괄 적용
+const val HOURLY_RATE = 25000  // 시급 - PartTimeEmployee 객체의 월급 계산 시 사용
 
+/**
+ * Impements an API for EmployeeManger class
+ * EmployeeManager 클래스는 프로그램 전체 로직을 담당
+ * @author Jungwoo Jo
+ */
 class EmployeeManager {
     private val emScanner = Scanner(System.`in`)
-    private val emOperations = EMOperationsImplement()
+    private val emOperations = EMOperationsImplement() // EMOperationsImplement
+                                                       // 클래스의 객체를 멤버변수르 가짐
+
+    /**
+     * UUID 클래스를 상속받는 makeUuid 함수를 동반 객체 내부로 정의
+     * UUID.randomUUID() 값을 구분자 '-'로 파싱한 뒤
+     * String 배열로 다시 생성하여 사원번호를 할당해주는 함수
+     * (JAVA 자체적인 split 버그로 해줘야 하는 작업)
+     */
     companion object {
         fun makeUuid():UUID {
             val uuidString:String = UUID.randomUUID().toString()
@@ -35,6 +48,11 @@ class EmployeeManager {
             return UUID(msb, lsb)
         }
     }
+
+    /**
+     * 메인 함수로부터 사용자 커맨드를 파라미터로 받아
+     * 1부터 7까지의 각 작업을 when 제어문으로 분기
+     */
     fun doOperations(emCommand: Int) = when (emCommand) {
         1 -> {
             emOperations.viewAllEmployee()
@@ -156,6 +174,13 @@ class EmployeeManager {
         7 -> exitProcess(0)
         else -> println("잘못된 입력입니다")
     }
+
+    /**
+     * 사원 정보 변경을 선택 시, 사용자에게 변경 정보를 입력받고 MutableMap 컬렉션으로 임시 저장
+     * 기본 정보(이름, 나이, 주소, 부서)는 Permanent, Sales, PartTime 모든 사원이 공통적으로 가짐
+     * 따라서 이 정보는 Employee 클래스에 있는 modifyEmployeeInformation 메서드를 통해 처리
+     * 급여 정보(월급, 인센티브, 시급)는 각 클래스가 모두 다른 변수를 사용하므로 메서드도 각각 다르게 처리
+     */
     private fun modifyEmployee(employeeId:String, employeePart:Int): Employee? {
         val mapModifyInfo : MutableMap<String,String> = mutableMapOf()
             loop@ do {

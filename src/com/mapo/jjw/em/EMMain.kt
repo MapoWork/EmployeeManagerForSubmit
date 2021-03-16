@@ -3,6 +3,12 @@ package com.mapo.jjw.em
 import java.lang.Exception
 import java.util.*
 
+/**
+ * 사원 관리 프로그램
+ * 메인함수에서 사용자로부터 커맨드를 입력받고 EmployeeManager 객체를 생성하여 파라미터로 넘김
+ * 1번부터 7번까지의 메뉴로 프로그램 로직이 반복되며, 7을 누르면 프로그램 종료
+ * @author Jungwoo Jo
+ * */
 fun main() {
     val emScanner = Scanner(System.`in`)
     val emTaskRunner = EmployeeManager()
