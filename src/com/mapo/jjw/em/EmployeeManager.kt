@@ -23,7 +23,7 @@ class EmployeeManager {
                                                        // 클래스의 객체를 멤버변수르 가짐
 
     /**
-     * UUID 클래스를 상속받는 makeUuid 함수를 동반 객체 내부로 정의 -> UUID 자체로도 static하지 않은가에 대한 의문...
+     * UUID 클래스를 상속받는 makeUuid 함수를 동반 객체 내부로 정의 -> UUID 자체로도 static ...?
      * UUID.randomUUID() 값을 구분자 '-'로 파싱한 뒤
      * String 배열로 다시 생성하여 사원번호를 할당해주는 함수
      * (JAVA 자체적인 split 버그로 해줘야 하는 작업)
