@@ -4,8 +4,18 @@ import com.mapo.jjw.em.EmployeeManager.Companion.makeUuid
 import com.mapo.jjw.em.model.*
 import java.util.*
 
+/**
+ * Implements an API for EmployeeDataRepository class
+ * EmployeeDataRepository 클래스는 사원 정보를 MutableList 컬렉션으로 보관
+ * 조회, 등록, 변경 과정을 수행하는 저장소 역할, 이를테면 Database
+ * @author Jungwoo Jo
+ */
 class EmployeeDataRepository {
-    private var employeeDirectory = mutableListOf<Employee>()
+    private var employeeDirectory = mutableListOf<Employee>() // 저장소 MutableList 컬렉션
+    /**
+     * 초기화
+     * 저장소 MutableList 컬렉션에 사원 구분 별로 각각 5명의 사원을 임의로 추가
+     */
     init {
         val employeeRND1 = PartTimeEmployee(makeUuid(), 2, "김파트", Department.GENERAL_AFFAIRS, 20, "서울", 5)
         val employeeRND2 = PartTimeEmployee(makeUuid(), 2, "이파트", Department.RND_LAB, 21, "경기", 6)
@@ -38,28 +48,46 @@ class EmployeeDataRepository {
         employeeDirectory.add(employeeSE4)
         employeeDirectory.add(employeeSE5)
     }
-    fun set(employeeDir: MutableList<Employee>) {
-        employeeDirectory = employeeDir
-    }
+    /**
+     * 저장소 MutableList 컬렉션에 사원 객체를 추가하는 메서드
+     */
     fun addEmployee(employee: Employee) : Boolean{
         return this.employeeDirectory.add(employee)
     }
+    /**
+     * 저장소 MutableList 컬렉션에 저장된 사원 객체를 제거하는 메서드
+     */
     fun removeEmployee(employee: Optional<Employee>) {
         this.employeeDirectory.remove(employee.get())
     }
+    /**
+     * 저장소 MutableList 컬렉션에 저장된 사원 중 매개변수로 받은 사원 번호와 사원 구분이 일치하는 사원 객체를 반환해주는 메서드
+     */
     fun getEmployeeById(employeeNo : UUID, employeePart : Int): Optional<Employee> {
         return this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeNo() == employeeNo }.filter{
             employee -> employee.getEmployeePart() == employeePart
-        }.sorted().findAny()
+        }.findAny()
     }
+    /**
+     * 저장소 MutableList 컬렉션에 저장된 모든 사원을 조회하기 위해 컬렉션 객체 자체를 반환해주는 메서드
+     */
     fun getAllEmployee(): MutableList<Employee> {
-        return this.employeeDirectory
+        return employeeDirectory
     }
+    /**
+     * 저장소 MutableList 컬렉션에 저장된 사원 중 매개변수로 받은 사원 구분과 일치하는 사원들을 병렬 스트림을 통해 필터링
+     * 필터링 후 정렬하여 각각 임시 MutableList 컬렉션에 저장하여 그 객체를 반환해주는 메서드
+     */
     fun getDepartmentEmployee(employeeDepartment: Department): MutableList<Employee> {
         val employeeDepartmentDirectory = mutableListOf<Employee>()
         this.employeeDirectory.parallelStream().filter { employee -> employee.getEmployeeDepartment() == employeeDepartment }.sorted().forEach(employeeDepartmentDirectory::add)
         return employeeDepartmentDirectory
     }
+    /**
+     * 저장소 MutableList 컬렉션 내에 매개변수로 받은 사원 번호에 해당하는 사원 객체가 존재하는 지 확인하고
+     * 해당 사원이 존재할 시 사원 구분 값을 반환해주는 메서드
+     * 객체가 존재하지 않을 시, -1을 반환
+     */
     fun getEmployeeExistInformation(employeeNo: UUID) : Int {
         return when(this.employeeDirectory.parallelStream().anyMatch { employee -> employee.getEmployeeNo() == employeeNo }) {
             true -> {
