@@ -44,13 +44,13 @@ class EMOperationsImplement : EMOperations {
             employeeValue.updateEmployeeInformation(employee)
             when(employeeValue.getEmployeePart()) {
                 0 -> {
-                    (employeeValue as PermanentEmployee).updateEmployeeSalary(employeeValue)
+                    (employeeValue as PermanentEmployee).updatePEmployeeSalary(employeeValue)
                 }
                 1 -> {
-                    (employeeValue as SalesEmployee).updateEmployeeInformation(employeeValue)
+                    (employeeValue as SalesEmployee).updateSEmployeeSalary(employeeValue)
                 }
                 2 -> {
-                    (employeeValue as PartTimeEmployee).updateEmployeeInformation(employeeValue)
+                    (employeeValue as PartTimeEmployee).updatePTEmployeeSalary(employeeValue)
                 }
             }
         }

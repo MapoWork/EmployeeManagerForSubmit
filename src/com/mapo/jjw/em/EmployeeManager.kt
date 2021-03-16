@@ -222,7 +222,7 @@ class EmployeeManager {
                                     when {
                                         emWorkingHour < 0 -> println("잘못된 입력입니다")
                                         else -> {
-                                            mapModifyInfo.put("workingHour", emWorkingHour.toString())
+                                            mapModifyInfo.put("workinghour", emWorkingHour.toString())
                                             break@loop
                                         }
                                     }
@@ -231,7 +231,7 @@ class EmployeeManager {
                                     try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("address").toString() } catch(e:Exception) { null } )
-                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("workinghour")?.toLong() } catch(e:Exception) { null } )
+                                employee.modifyPTEmployeeSalary( try { mapModifyInfo.get("workinghour")?.toLong() } catch(e:Exception) { null } )
                                 return employee
                             }
                             1 -> {
@@ -262,7 +262,7 @@ class EmployeeManager {
                                     try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("address").toString() } catch(e:Exception) { null } )
-                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null },
+                                employee.modifySEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("salesperformance")?.toLong() } catch(e:Exception) { null } )
                                 return employee
                             }
@@ -283,7 +283,7 @@ class EmployeeManager {
                                     try { valueOf(mapModifyInfo.get("department").toString()) } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("age")?.toInt() } catch(e:Exception) { null },
                                     try { mapModifyInfo.get("address") } catch(e:Exception) { null } )
-                                employee.modifyEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null } )
+                                employee.modifyPEmployeeSalary( try { mapModifyInfo.get("salary")?.toLong() } catch(e:Exception) { null } )
                                 return employee
                             }
                             else -> { return null }
